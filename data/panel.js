@@ -7,7 +7,8 @@ var classNames = {
 var ids = {
   wrap: "wrap",
   backButton: "button-back",
-  messageInput: "message-input"
+  messageInput: "message-input",
+  conversationListing: "list"
 };
 
 var url = {
@@ -51,18 +52,53 @@ var handlers = {
   }
 };
 
+var dom = {
+  populateConversationListing: function(json) {
+    var list = document.getElementById(ids.conversationListing);
+    for (var id in json.messages) {
+      var contact = document.createElement('li');
+
+      // Classes
+      contact.classList.add('contact');
+      if (json.messages[id].isRead) {
+        contact.classList.add('read');
+      } else {
+        contact.classList.add('unread');
+      }
+
+      // Data attributes
+      contact.dataset.id = id;
+      contact.dataset.phone = json.messages[id].displayNumber;
+
+      // Name
+      var name = document.createElement('div');
+      name.classList.add('contact-name');
+      name.innerHTML = "No name yet :(";
+      contact.appendChild(name);
+
+      // Phone Number
+      var phoneNumber = document.createElement('div');
+      phoneNumber.classList.add('small');
+      phoneNumber.classList.add('grey');
+      phoneNumber.innerHTML = json.messages[id].displayNumber;
+      contact.appendChild(phoneNumber);
+
+      list.appendChild(contact);
+    }
+  }
+};
+
 var api = {
   smsListing: function() {
-    self.port.emit('smsListingRequest');
-    self.port.on('smsListingResponse', function(response) {
-      console.log("Response", response.text);
+    self.port.on('recentSMS', function(responseJSON) {
+      dom.populateConversationListing(responseJSON);
+      handlers.conversationClick();
     });
   }
-}
+};
 
 window.onload = function() {
-  handlers.conversationClick();
   handlers.backButton();
   handlers.messageInputFocus();
-  // api.smsListing();
+  api.smsListing();
 };

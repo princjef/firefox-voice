@@ -1,6 +1,7 @@
 html {
   padding: 0;
   margin: 0;
+  height: 100%;
 }
 
 body {
@@ -9,6 +10,7 @@ body {
   font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
   overflow: hidden;
   background-color: #fbfbfb;
+  height: 100%;
 }
 
 *, *:before, *:after {
@@ -48,6 +50,7 @@ body {
 }
 
 .wrap {
+  height: 100%;
   width: 200%;
   left: 0;
   transform: translateX(0%);
@@ -66,10 +69,13 @@ body {
 }
 
 .panel.left-panel {
+  height: 100%;
   opacity: 1;
+  overflow: auto;
 }
 
 .panel.right-panel {
+  height: 100%;
   opacity: 0;
 }
 
