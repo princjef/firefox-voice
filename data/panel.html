@@ -1,12 +1,51 @@
 <html>
   <head>
+    <link rel="stylesheet" href="panel.css" type="text/css" media="screen" charset="utf-8">
   </head>
   <body>
-    <ul>
-      <li>Here</li>
-      <li>Is</li>
-      <li>Some</li>
-      <li>Content</li>
-    </ul>  
+    <div id="wrap" class="wrap clearfix">
+      <section class="panel left-panel" id="list">
+        <ul class="block-list">
+          <li class="contact unread">
+            <div class="contact-name">Chris Waters</div>
+            <div class="small grey">(123) 456-7890</div>
+          </li>
+          <li class="contact read">
+            <div class="contact-name">Jeff Principe</div>
+            <div class="small grey">(123) 456-7890</div>
+          </li>
+        </ul>
+      </section>
+      <section class="panel right-panel panel-flex" id="conversation">
+        <header class="panel-header panel-flex-fixed">
+          <div class="button-back panel-header-entry-fixed" id="button-back">
+            <svg viewbox="0 0 100 100" version="1.1" xmlns="http://www.w3.org/2000/svg">
+              <path class="button-back-content" d="M 25,50 L 55,80 L 70,80 L 40,50 L 70,20 L 55,20 Z" />
+            </svg>
+          </div>
+          <div class="panel-header-entry-fill conversation-name">Chris Waters</div>
+        </header>
+        <div class="panel-flex-fill">
+          <ul class="block-list">
+            <li class="message message-incoming">
+              <div class="message-content">Star wars.</div>
+              <div class="message-time small grey">11:24 PM</div>
+            </li>
+            <li class="message message-outgoing">
+              <div class="message-content">I love that Andy Serkis is on the cast. He's such an underappreciated actor</div>
+              <div class="message-time small grey">11:32 PM</div>
+            </li>
+            <li class="message message-incoming">
+              <div class="message-content"> It looks like a solid cast. Had they already announced that the entire original cast was back? Or is that new?</div>
+              <div class="message-time small grey">11:51 PM</div>
+            </li>
+          </ul>
+        </div>
+        <div class="conversation-footer panel-flex-fixed">
+          <div id="message-input" class="message-input grey" name="message" contenteditable="true">Send to (123) 456-7890</div>
+          <button class="button button-flat-primary button-rounded send-message-button" name="send-message">Send</button>
+        </div>
+      </section>
+    </div>
   </body>
 </html>
