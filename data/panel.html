@@ -8,7 +8,7 @@
         <ul class="block-list" id="list">
 <!--           <li class="contact unread">
             <div class="contact-name">Contact Name</div>
-            <div class="small grey">Contact PHone Number</div>
+            <div class="small grey">Contact Phone Number</div>
           </li> -->
         </ul>
       </section>
@@ -19,26 +19,18 @@
               <path class="button-back-content" d="M 25,50 L 55,80 L 70,80 L 40,50 L 70,20 L 55,20 Z" />
             </svg>
           </div>
-          <div class="panel-header-entry-fill conversation-name">Chris Waters</div>
+          <div class="panel-header-entry-fill conversation-name" id="conversation-name"></div>
         </header>
-        <div class="panel-flex-fill">
-          <ul class="block-list">
-            <li class="message message-incoming">
-              <div class="message-content">Star wars.</div>
-              <div class="message-time small grey">11:24 PM</div>
-            </li>
-            <li class="message message-outgoing">
-              <div class="message-content">I love that Andy Serkis is on the cast. He's such an underappreciated actor</div>
-              <div class="message-time small grey">11:32 PM</div>
-            </li>
-            <li class="message message-incoming">
-              <div class="message-content"> It looks like a solid cast. Had they already announced that the entire original cast was back? Or is that new?</div>
-              <div class="message-time small grey">11:51 PM</div>
-            </li>
+        <div class="panel-flex-fill" id="message-list-wrap">
+          <ul class="block-list" id="message-list">
+<!--             <li class="message message-incoming"> <- need to know whether incoming or outgoing
+              <div class="message-content">SMS content here</div>
+              <div class="message-time small grey">SMS time here</div>
+            </li> -->
           </ul>
         </div>
         <div class="conversation-footer panel-flex-fixed">
-          <div id="message-input" class="message-input grey" name="message" contenteditable="true">Send to (123) 456-7890</div>
+          <div id="message-input" class="message-input grey" name="message" contenteditable="true"></div>
           <button class="button button-flat-primary button-rounded send-message-button" name="send-message">Send</button>
         </div>
       </section>
