@@ -20,7 +20,8 @@ var ids = {
   conversationListing: "list",
   conversationDetailsName: "conversation-name",
   messageList: "message-list",
-  messageListScroll: "message-list-wrap"
+  messageListScroll: "message-list-wrap",
+  sendMessageButton: "send-message"
 };
 
 var url = {
@@ -28,8 +29,9 @@ var url = {
 };
 
 var conversations = [];
+var currentConversation = {};
 var numberToText = "";
-var messageInputHasText = false;
+var rnrKey = null;
 
 var handlers = {
   conversationClick: function() {
@@ -46,26 +48,32 @@ var handlers = {
       document.getElementById(ids.wrap).classList.remove(classNames.detailsView);
     });
   },
-  messageInputFocus: function() {
+  messageInputChange: function() {
     var messageInput = document.getElementById(ids.messageInput);
-    messageInputHasText = false;
 
-    messageInput.addEventListener('focus', function() {
-      if (!messageInputHasText) {
-        this.innerHTML = "";
-        this.classList.remove(classNames.placeholder);
-      }
+    var resize = function() {
+      window.setTimeout(function() {
+        messageInput.style.height = "1px";
+        messageInput.style.height = messageInput.scrollHeight + "px";
+      }, 0);
+    };
+
+    messageInput.addEventListener('change', resize);
+    messageInput.addEventListener('cut', resize);
+    messageInput.addEventListener('paste', resize);
+    messageInput.addEventListener('drop', resize);
+    messageInput.addEventListener('keydown', resize);
+  },
+  sendMessage: function() {
+    document.getElementById(ids.sendMessageButton).addEventListener('click', function() {
+      var message = document.getElementById(ids.messageInput).value;
+      self.port.emit('sendMessage', {
+        message: message,
+        conversation: currentConversation,
+        rnrKey: rnrKey
+      });
     });
 
-    messageInput.addEventListener('blur', function() {
-      if (this.innerHTML.length > 0) {
-        messageInputHasText = true;
-      } else {
-        messageInputHasText = false;
-        this.innerHTML = "Send to (123) 456-7890";
-        this.classList.add(classNames.placeholder);
-      }
-    });
   }
 };
 
@@ -141,10 +149,10 @@ var dom = {
     });
   },
   populateConversationDetails: function(id) {
-    var conversationData = {};
+    currentConversation = {};
     conversations.forEach(function(conversation) {
       if (conversation.id === id) {
-        conversationData = conversation;
+        currentConversation = conversation;
       }
     });
 
@@ -152,10 +160,10 @@ var dom = {
     list.innerHTML = "";
 
     // Name
-    document.getElementById(ids.conversationDetailsName).innerHTML = conversationData.contact.name;
+    document.getElementById(ids.conversationDetailsName).innerHTML = currentConversation.contact.name;
 
     // Messages
-    conversationData.messages.forEach(function(message) {
+    currentConversation.messages.forEach(function(message) {
       var messageHTML = document.createElement('li');
 
       // Classes
@@ -184,9 +192,7 @@ var dom = {
     });
 
     // Text Number
-    if (!messageInputHasText) {
-      document.getElementById(ids.messageInput).innerHTML = "Send to " + conversationData.contact.displayNumber;
-    }
+    document.getElementById(ids.messageInput).setAttribute("placeholder", "Send to " + currentConversation.contact.displayNumber);
 
     // Scroll
     var listWrap = document.getElementById(ids.messageListScroll);
@@ -201,11 +207,21 @@ var api = {
       dom.populateConversationListing();
       handlers.conversationClick();
     });
+  },
+  rnrData: function() {
+    self.port.on('rnrData', function(htmlString) {
+      var parser = new DOMParser();
+      var doc = parser.parseFromString(htmlString, "text/html");
+      rnrKey = doc.getElementsByName("_rnr_se")[0].value;
+      console.log("rnrKey", rnrKey);
+    });
   }
 };
 
 window.onload = function() {
   handlers.backButton();
-  handlers.messageInputFocus();
+  handlers.sendMessage();
+  handlers.messageInputChange();
   api.smsListing();
+  api.rnrData();
 };

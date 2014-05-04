@@ -182,6 +182,7 @@ body {
   background-color: #fff;
   font-size: 0.9em;
   line-height: 1.25em;
+  white-space: pre-wrap;
 }
 
 .message-incoming {
@@ -208,14 +209,23 @@ body {
   font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
   padding: 0.5em 0.5em;
   line-height: 1.3em;
-  min-height: 2.3em;
-  max-height: 4.9em;
+  min-height: 2.4em;
+  height: 2.4em;
+  max-height: 4.8em;
+  font-size: 0.9em;
   overflow: auto;
   word-wrap: break-word;
+  border: none;
   outline: none;
+  resize: none;
 
   flex-grow: 1;
   flex-shrink: 1;
+}
+
+.message-input:hover, .message-input:active {
+  outline: none;
+  border: none;
 }
 
 .send-message-button {
@@ -229,6 +239,7 @@ body {
   background-color: #3EA3E6;
   border: 0.05em solid #3791CC;
   border-radius: 0.3em;
+  font-size: 0.9em;
 
   transition: all 0.3s ease;
 }
