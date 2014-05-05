@@ -24,14 +24,12 @@ var ids = {
   sendMessageButton: "send-message"
 };
 
-var url = {
-  smsListing: "http://www.google.com/voice/inbox/recent/sms/"
-};
-
 var conversations = [];
 var currentConversation = {};
 var numberToText = "";
 var rnrKey = null;
+var currentMessageUpdateId = 1;
+var pendingMessages = [];
 
 var handlers = {
   conversationClick: function() {
@@ -39,6 +37,14 @@ var handlers = {
     for (var i = 0; i < conversations.length; i++) {
       conversations.item(i).addEventListener('click', function(event) {
         dom.populateConversationDetails(this.dataset.id);
+        if (this.classList.contains('unread')) {
+          this.classList.remove('unread');
+          this.classList.add('read');
+          self.port.emit('markRead', {
+            id: this.dataset.id,
+            rnrKey: rnrKey
+          });
+        }
         document.getElementById(ids.wrap).classList.add(classNames.detailsView);
       });
     }
@@ -67,13 +73,15 @@ var handlers = {
   sendMessage: function() {
     document.getElementById(ids.sendMessageButton).addEventListener('click', function() {
       var message = document.getElementById(ids.messageInput).value;
+      pendingMessages[currentMessageUpdateId] = dom.addNewMessage(message, true);
+
       self.port.emit('sendMessage', {
         message: message,
         conversation: currentConversation,
-        rnrKey: rnrKey
+        rnrKey: rnrKey,
+        updateId: currentMessageUpdateId
       });
     });
-
   }
 };
 
@@ -197,6 +205,54 @@ var dom = {
     // Scroll
     var listWrap = document.getElementById(ids.messageListScroll);
     listWrap.scrollTop = listWrap.scrollHeight;
+  },
+  addNewMessage: function(content, isOutgoing) {
+    var list = document.getElementById(ids.messageList);
+    var message = document.createElement('li');
+    message.classList.add('message');
+    message.classList.add('message-pending');
+    if (isOutgoing) {
+      message.classList.add('message-outgoing');
+    } else {
+      message.classList.add('message-incoming');
+    }
+
+    // Content
+    var contentDiv = document.createElement('div');
+    contentDiv.classList.add('message-content');
+    contentDiv.innerHTML = content;
+    message.appendChild(contentDiv);
+
+    // Time
+    var time = document.createElement('div');
+    time.classList.add('message-time');
+    time.classList.add('grey');
+    time.classList.add('small');
+    time.innerHTML = "Sending";
+    message.appendChild(time);
+
+    list.appendChild(message);
+
+    document.getElementById(ids.messageInput).value = "";
+
+    // Scroll
+    var listWrap = document.getElementById(ids.messageListScroll);
+    listWrap.scrollTop = listWrap.scrollHeight;
+
+    return function(success) {
+      if (success) {
+        message.classList.remove('message-pending');
+
+        // Set time
+        var d = new Date();
+        var AMPM = d.getHours() >= 12 ? "PM" : "AM";
+        var hour = d.getHours() % 12;
+        if (hour === 0) hour = 12;
+        time.innerHTML = "" + hour + ":" + d.getMinutes() + " " + AMPM;
+      } else {
+        time.innerHTML = "Failed to send";
+      }
+    };
   }
 };
 
@@ -215,6 +271,11 @@ var api = {
       rnrKey = doc.getElementsByName("_rnr_se")[0].value;
       console.log("rnrKey", rnrKey);
     });
+  },
+  updateMessageTime: function() {
+    self.port.on('messageSent', function(data) {
+      pendingMessages[data.updateId](data.success);
+    });
   }
 };
 
@@ -224,4 +285,5 @@ window.onload = function() {
   handlers.messageInputChange();
   api.smsListing();
   api.rnrData();
+  api.updateMessageTime();
 };

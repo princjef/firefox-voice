@@ -182,7 +182,6 @@ body {
   background-color: #fff;
   font-size: 0.9em;
   line-height: 1.25em;
-  white-space: pre-wrap;
 }
 
 .message-incoming {
@@ -194,6 +193,10 @@ body {
   float: right;
   clear: both;
   text-align: right;
+}
+
+.message-content {
+  white-space: pre-wrap;
 }
 
 /* Footer */
