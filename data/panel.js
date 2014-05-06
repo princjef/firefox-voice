@@ -261,6 +261,9 @@ var api = {
     self.port.on('recentSMS', function(response) {
       conversations = dom.parseListingHTML(response.html, response.json);
       dom.populateConversationListing();
+      if (currentConversation.id !== undefined && currentConversation.id !== null) {
+        dom.populateConversationDetails(currentConversation.id);
+      }
       handlers.conversationClick();
     });
   },
