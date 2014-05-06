@@ -313,6 +313,12 @@ var api = {
         }
       }
     }
+  },
+  notificationClick: function() {
+    self.port.on('notificationClick', function(data) {
+      document.getElementById(ids.wrap).classList.add(classNames.detailsView);
+      dom.populateConversationDetails(data.id);
+    });
   }
 };
 
