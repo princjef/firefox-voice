@@ -24,7 +24,7 @@ var ids = {
   sendMessageButton: "send-message"
 };
 
-var conversations = [];
+var conversations = null;
 var currentConversation = {};
 var numberToText = "";
 var rnrKey = null;
@@ -118,14 +118,15 @@ var dom = {
         conversation.messages.push(message);
       }
 
-      json.push(conversation);
+      json[id] = conversation;
     }
     return json;
   },
   populateConversationListing: function() {
     var list = document.getElementById(ids.conversationListing);
     list.innerHTML = "";
-    conversations.forEach(function(conversation) {
+    for (var key in conversations) {
+      var conversation = conversations[key];
       var contact = document.createElement('li');
 
       // Classes
@@ -154,15 +155,10 @@ var dom = {
       contact.appendChild(phoneNumber);
 
       list.appendChild(contact);
-    });
+    }
   },
   populateConversationDetails: function(id) {
-    currentConversation = {};
-    conversations.forEach(function(conversation) {
-      if (conversation.id === id) {
-        currentConversation = conversation;
-      }
-    });
+    currentConversation = conversations[id];
 
     var list = document.getElementById(ids.messageList);
     list.innerHTML = "";
@@ -258,8 +254,15 @@ var dom = {
 
 var api = {
   smsListing: function() {
-    self.port.on('recentSMS', function(response) {
-      conversations = dom.parseListingHTML(response.html, response.json);
+    var that = this;
+    self.port.on('recentSMS', function(data) {
+      var newConversations = dom.parseListingHTML(data.response.html, data.response.json);
+      if (data.notify) {
+        that.newMessageNotification(newConversations);
+      }
+
+      conversations = newConversations;
+
       dom.populateConversationListing();
       if (currentConversation.id !== undefined && currentConversation.id !== null) {
         dom.populateConversationDetails(currentConversation.id);
@@ -279,6 +282,37 @@ var api = {
     self.port.on('messageSent', function(data) {
       pendingMessages[data.updateId](data.success);
     });
+  },
+  newMessageNotification: function(newConversations) {
+    var firstMessageOnly = (conversations === null);
+    for (var id in newConversations) {
+      var conversation = newConversations[id];
+      if (!conversation.isRead) {
+        if (conversations === null ||
+            conversations === undefined ||
+            conversations[id] === undefined ||
+            conversations[id].isRead ||
+            conversation.length > conversations[id].length
+        ) {
+          var sentNotification = false;
+          for (var i = conversation.messages.length - 1; i >= 0; i--) {
+            if (conversation.messages[i].isOutgoing) {
+              self.port.emit('messageNotification', {
+                id: id,
+                name: conversation.contact.name,
+                displayNumber: conversation.contact.displayNumber,
+                content: conversation.messages[i].content
+              });
+              sentNotification = true;
+              break;
+            }
+          }
+          if (sentNotification && firstMessageOnly) {
+            break;
+          }
+        }
+      }
+    }
   }
 };
 
