@@ -296,7 +296,7 @@ var api = {
         ) {
           var sentNotification = false;
           for (var i = conversation.messages.length - 1; i >= 0; i--) {
-            if (conversation.messages[i].isOutgoing) {
+            if (!conversation.messages[i].isOutgoing) {
               self.port.emit('messageNotification', {
                 id: id,
                 name: conversation.contact.name,
