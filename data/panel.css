@@ -100,9 +100,15 @@ body {
 }
 
 .panel-header-entry-fill {
+  position: relative;
   margin: auto 0;
   flex-grow: 1;
   flex-shrink: 1;
+}
+
+.panel-header-padded {
+  padding-left: 0.5em;
+  padding-right: 0.5em;
 }
 
 .panel-flex {
@@ -112,11 +118,13 @@ body {
 }
 
 .panel-flex-fixed {
+  position: relative;
   flex-grow: 0;
   flex-shrink: 0;
 }
 
 .panel-flex-fill {
+  position: relative;
   flex-grow: 1;
   flex-shrink: 1;
   overflow: auto;
@@ -146,19 +154,15 @@ body {
   font-size: 1em;
 }
 
-/* Conversation Header */
-.conversation-name {
-}
-
-/* Back Button */
-.button-back {
+/* Header Button */
+.header-button {
   width: 2.5em;
   height: 2.5em;
   padding: 0.3em;
   cursor: pointer;
 }
 
-.button-back-content {
+.header-button-content {
   stroke: #222;
   fill: #222;
   stroke-linejoin: round;
@@ -166,7 +170,7 @@ body {
   transition: all 0.3s ease;
 }
 
-.button-back:hover .button-back-content {
+.header-button:hover .header-button-content {
   stroke: #45B5FF;
   fill: #45B5FF;
 }
@@ -256,4 +260,82 @@ body {
 .send-message-button:active {
   background-color: #296D99;
   border-color: #225B80;
+}
+
+/* New Conversation */
+.new-conversation-button {
+  transform: rotate(0deg);
+  transition: transform 0.3s ease;
+}
+
+.find-contact .new-conversation-button {
+  transform: rotate(45deg);
+}
+
+.expandable-input {
+  position: absolute;
+  padding: 0 0.5em;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  width: 0%;
+  overflow: hidden;
+  transition: width 0.3s ease;
+}
+
+.find-contact .expandable-input {
+  width: 100%;
+  overflow: visible;
+}
+
+.expandable-input-content, .expandable-input-content:hover, .expandable-input-content:active {
+  width: 100%;
+  font-size: 0.9em;
+  border: none;
+  outline: none;
+}
+
+.contact-list {
+  opacity: 1;
+  transition: opacity 0.3s ease;
+}
+
+.find-contact .contact-list {
+  opacity: 0;
+}
+
+/* Typeahead */
+.typeahead-wrap {
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 100%;
+  right: -100%;
+  bottom: 0;
+  overflow: auto;
+  z-index: 50;
+  transition: left 0.3s ease, right 0.3s ease;
+}
+
+.find-contact .typeahead-wrap {
+  left: 0;
+  right: 0;
+}
+
+.typeahead {
+  display: block;
+  padding: 0;
+  margin: 0;
+  list-style-type: none;
+}
+
+.typeahead-element {
+  display: block;
+  width: 100%;
+  font-size: 0.9em;
+  padding: 0.25em 0.5em;
+  line-height: 1.5em;
+  white-space: nowrap;
+  overflow: hidden;
+  border-bottom: 0.1em solid #f5f5f5;
 }

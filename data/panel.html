@@ -4,22 +4,41 @@
   </head>
   <body>
     <div id="wrap" class="wrap clearfix">
-      <section class="panel left-panel">
-        <ul class="block-list" id="list">
-<!--           <li class="contact unread">
-            <div class="contact-name">Contact Name</div>
-            <div class="small grey">Contact Phone Number</div>
-          </li> -->
-        </ul>
+      <section class="panel left-panel panel-flex">
+        <header class="panel-header panel-flex-fixed" id="conversation-listing-header">
+          <div class="panel-header-entry-fill panel-title panel-header-padded">
+            <span>Inbox</span>
+            <div class="expandable-input">
+              <input type="text" id="new-conversation-input" name="new-conversation-input" class="expandable-input-content" placeholder="Contact Name or Phone Number" />
+            </div>
+          </div>
+          <div class="header-button panel-header-entry-fixed" id="new-conversation" alt="New Conversation">
+            <svg class="new-conversation-button" viewbox="0 0 100 100" version="1.1" xmlns="http://www.w3.org/2000/svg">
+              <path class="header-button-content" d="M 22,45 L 22,55 L 45,55 L 45,78 L 55,78 L 55,55 L 78,55 L 78,45 L 55,45 L 55,22 L 45,22 L 45,45 Z" />
+            </svg>
+          </div>
+        </header>
+        <div class="panel-flex-fill">
+          <ul class="block-list contact-list" id="list">
+  <!--           <li class="contact unread">
+              <div class="contact-name">Contact Name</div>
+              <div class="small grey">Contact Phone Number</div>
+            </li> -->
+          </ul>
+          <div class="typeahead-wrap">
+            <ul id="contact-typeahead" class="typeahead">
+            </ul>
+          </div>
+        </div>
       </section>
       <section class="panel right-panel panel-flex" id="conversation">
         <header class="panel-header panel-flex-fixed">
-          <div class="button-back panel-header-entry-fixed" id="button-back">
+          <div class="header-button panel-header-entry-fixed" id="button-back">
             <svg viewbox="0 0 100 100" version="1.1" xmlns="http://www.w3.org/2000/svg">
-              <path class="button-back-content" d="M 25,50 L 55,80 L 70,80 L 40,50 L 70,20 L 55,20 Z" />
+              <path class="header-button-content" d="M 25,50 L 55,80 L 70,80 L 40,50 L 70,20 L 55,20 Z" />
             </svg>
           </div>
-          <div class="panel-header-entry-fill conversation-name" id="conversation-name"></div>
+          <div class="panel-header-entry-fill panel-title" id="conversation-name"></div>
         </header>
         <div class="panel-flex-fill" id="message-list-wrap">
           <ul class="block-list" id="message-list">

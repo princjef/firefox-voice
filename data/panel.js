@@ -21,7 +21,11 @@ var ids = {
   conversationDetailsName: "conversation-name",
   messageList: "message-list",
   messageListScroll: "message-list-wrap",
-  sendMessageButton: "send-message"
+  sendMessageButton: "send-message",
+  newConversationButton: "new-conversation",
+  newConversationInput: "new-conversation-input",
+  newConversationTypeahead: "contact-typeahead",
+  conversationListingHeader: "conversation-listing-header"
 };
 
 var user = {};
@@ -82,6 +86,13 @@ var handlers = {
         rnrKey: rnrKey,
         updateId: currentMessageUpdateId
       });
+    });
+  },
+  newConversationClick: function() {
+    document.getElementById(ids.newConversationButton).addEventListener('click', function() {
+      console.log("Clicked new conversation button");
+      document.getElementById(ids.wrap).classList.toggle("find-contact");
+      document.getElementById(ids.newConversationInput).focus();
     });
   }
 };
@@ -250,6 +261,29 @@ var dom = {
         time.innerHTML = "Failed to send";
       }
     };
+  },
+  populateTypeahead: function() {
+    var typeahead = document.getElementById(ids.newConversationTypeahead);
+    typeahead.innerHTML = "";
+
+    user.rankedContacts.forEach(function(contactId) {
+      var contactInfo = user.contacts[contactId];
+      var contact = document.createElement('li');
+      contact.classList.add('typeahead-element');
+      contact.dataset.phone = contactInfo.phoneNumber;
+      contact.dataset.name = contactInfo.name;
+
+      var name = document.createElement('span');
+      name.innerHTML = contactInfo.name + " ";
+      contact.appendChild(name);
+
+      var phone = document.createElement('span');
+      phone.classList.add('grey');
+      phone.innerHTML = contactInfo.displayNumber;
+      contact.appendChild(phone);
+
+      typeahead.appendChild(contact);
+    });
   }
 };
 
@@ -279,7 +313,6 @@ var api = {
       console.log("rnrKey", rnrKey);
 
       var scriptElements = doc.getElementsByTagName("script");
-      console.log("Extracting user text");
       var userText = scriptElements.item(scriptElements.length - 1)
         .textContent                   // get text of script element
         .split("var _gcData = ")[1]    // Start of JSON data
@@ -288,7 +321,8 @@ var api = {
         .replace(/\,\s*\}/g, "}")      // get rid of trailing commas in object
         .replace(/\,\s*\]/g, "]");     // get rid of trailing commas in array
       user = JSON.parse(userText);
-      console.log("User", user);
+      console.log("Extracted user info");
+      dom.populateTypeahead();
     });
   },
   updateMessageTime: function() {
@@ -339,6 +373,7 @@ window.onload = function() {
   handlers.backButton();
   handlers.sendMessage();
   handlers.messageInputChange();
+  handlers.newConversationClick();
   api.smsListing();
   api.globalData();
   api.updateMessageTime();
