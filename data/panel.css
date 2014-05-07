@@ -65,6 +65,7 @@ body {
 .panel {
   float: left;
   width: 50%;
+  overflow-x: hidden;
   transition: opacity 0.5s ease;
 }
 
@@ -127,10 +128,18 @@ body {
   position: relative;
   flex-grow: 1;
   flex-shrink: 1;
-  overflow: auto;
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 
 /* Contact List */
+.contact-list-wrap {
+  height: 100%;
+  width: 100%;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
 .contact {
   padding: 0.5em;
   border-bottom: 0.05em solid #f5f5f5;
@@ -342,4 +351,8 @@ body {
 
 .typeahead-element.hidden {
   display: none;
+}
+
+.typeahead-element.visible.selected {
+  background-color: #ddd;
 }

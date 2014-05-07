@@ -25,7 +25,8 @@ var ids = {
   sendMessageButton: "send-message",
   newConversationButton: "new-conversation",
   newConversationInput: "new-conversation-input",
-  newConversationTypeahead: "contact-typeahead",
+  contactTypeahead: "contact-typeahead",
+  contactTypeaheadWrap: "typeahead-wrap",
   conversationListingHeader: "conversation-listing-header"
 };
 
@@ -36,6 +37,8 @@ var numberToText = "";
 var rnrKey = null;
 var currentMessageUpdateId = 1;
 var pendingMessages = [];
+var findingContact = false;
+var oldContactInputValue = "";
 
 var handlers = {
   conversationClick: function() {
@@ -92,6 +95,7 @@ var handlers = {
   newConversationClick: function() {
     document.getElementById(ids.newConversationButton).addEventListener('click', function() {
       console.log("Clicked new conversation button");
+      findingContact = !findingContact;
       document.getElementById(ids.wrap).classList.toggle("find-contact");
       document.getElementById(ids.newConversationInput).focus();
     });
@@ -103,17 +107,30 @@ var handlers = {
     var typeahead = function() {
       window.setTimeout(function() {
         var value = contactInput.value.toLowerCase();
-        var numValue = value.replace(/\.|-|\s/g, "");
+        if (value !== oldContactInputValue) {
+          oldContactInputValue = value;
+          var numValue = value.replace(/\.|-|\s/g, "");
+          var firstElement = true;
 
-        for (var i = 0; i < typeaheadContacts.length; i++) {
-          var contact = typeaheadContacts.item(i);
-          if (contact.dataset.name.toLowerCase().contains(value) ||
-              contact.dataset.phoneNumber.contains(numValue) ||
-              contact.dataset.displayNumber.contains(value)
-          ) {
-            contact.classList.remove('hidden');
-          } else {
-            contact.classList.add('hidden');
+          for (var i = 0; i < typeaheadContacts.length; i++) {
+            var contact = typeaheadContacts.item(i);
+            if (contact.dataset.name.toLowerCase().contains(value) ||
+                contact.dataset.phoneNumber.contains(numValue) ||
+                contact.dataset.displayNumber.contains(value)
+            ) {
+              contact.classList.remove('hidden');
+              contact.classList.add('visible');
+              if (firstElement) {
+                contact.classList.add('selected');
+                firstElement = false;
+              } else {
+                contact.classList.remove('selected');
+              }
+            } else {
+              contact.classList.add('hidden');
+              contact.classList.remove('visible');
+              contact.classList.remove('selected');
+            }
           }
         }
       }, 0);
@@ -124,6 +141,56 @@ var handlers = {
     contactInput.addEventListener('paste', typeahead);
     contactInput.addEventListener('drop', typeahead);
     contactInput.addEventListener('keydown', typeahead);
+  },
+  arrowKeys: function() {
+    document.getElementById(ids.newConversationInput).addEventListener('keydown', function(event) {
+      var getSelectedIndex = function(elements) {
+        for (var i = 0; i < elements.length; i++) {
+          if (elements.item(i).classList.contains('selected')) {
+            return i;
+          }
+        }
+        return null;
+      };
+
+      var selectedElement = null;
+
+      if (event.keyCode === 38) {  // Up Arrow
+        var visibleElements = document.querySelectorAll('.typeahead-element.visible');
+        var index = getSelectedIndex(visibleElements);
+        if (index !== null) {
+          visibleElements.item(index).classList.remove('selected');
+        }
+        var newIndex = (index === null || index <= 0) ? (visibleElements.length - 1) : (index - 1);
+        visibleElements.item(newIndex).classList.add('selected');
+        selectedElement = visibleElements.item(newIndex);
+        event.stopPropagation();
+        event.preventDefault();
+      } else if (event.keyCode === 40) {  // Down Arrow
+        var visibleElements = document.querySelectorAll('.typeahead-element.visible');
+        var index = getSelectedIndex(visibleElements);
+        if (index !== null) {
+          visibleElements.item(index).classList.remove('selected');
+        }
+        var newIndex = (index === null || index >= visibleElements.length - 1) ? 0 : (index + 1);
+        visibleElements.item(newIndex).classList.add('selected');
+        selectedElement = visibleElements.item(newIndex);
+        event.stopPropagation();
+        event.preventDefault();
+      }
+
+      if (selectedElement !== null) {
+        var typeahead = document.getElementById(ids.contactTypeaheadWrap);
+        // console.log("OutScroll", typeahead.scrollTop, "OutHeight", typeahead.offsetHeight, "InScroll", selectedElement.offsetTop, "InHeight", selectedElement.offsetHeight);
+        if (selectedElement.offsetTop < typeahead.scrollTop) {
+          var scroll = selectedElement.offsetTop;
+          typeahead.scrollTop = scroll;
+        } else if (selectedElement.offsetTop + selectedElement.offsetHeight > typeahead.scrollTop + typeahead.offsetHeight) {
+          var scroll = (selectedElement.offsetTop + selectedElement.offsetHeight - typeahead.offsetHeight);
+          typeahead.scrollTop = scroll;
+        }
+      }
+    });
   }
 };
 
@@ -293,13 +360,14 @@ var dom = {
     };
   },
   populateTypeahead: function() {
-    var typeahead = document.getElementById(ids.newConversationTypeahead);
+    var typeahead = document.getElementById(ids.contactTypeahead);
     typeahead.innerHTML = "";
 
     user.rankedContacts.forEach(function(contactId) {
       var contactInfo = user.contacts[contactId];
       var contact = document.createElement('li');
       contact.classList.add('typeahead-element');
+      contact.classList.add('visible');
       contact.dataset.phoneNumber = contactInfo.phoneNumber;
       contact.dataset.displayNumber = contactInfo.displayNumber;
       contact.dataset.name = contactInfo.name;
@@ -406,6 +474,7 @@ window.onload = function() {
   handlers.messageInputChange();
   handlers.newConversationClick();
   handlers.contactTypeahead();
+  handlers.arrowKeys();
   api.smsListing();
   api.globalData();
   api.updateMessageTime();
