@@ -24,6 +24,7 @@ var ids = {
   sendMessageButton: "send-message"
 };
 
+var user = {};
 var conversations = null;
 var currentConversation = {};
 var numberToText = "";
@@ -270,12 +271,24 @@ var api = {
       handlers.conversationClick();
     });
   },
-  rnrData: function() {
-    self.port.on('rnrData', function(htmlString) {
+  globalData: function() {
+    self.port.on('globalData', function(htmlString) {
       var parser = new DOMParser();
       var doc = parser.parseFromString(htmlString, "text/html");
       rnrKey = doc.getElementsByName("_rnr_se")[0].value;
       console.log("rnrKey", rnrKey);
+
+      var scriptElements = doc.getElementsByTagName("script");
+      console.log("Extracting user text");
+      var userText = scriptElements.item(scriptElements.length - 1)
+        .textContent                   // get text of script element
+        .split("var _gcData = ")[1]    // Start of JSON data
+        .split(/;$/m)[0]               // End of JSON data
+        .replace(/(\/\/)*'/g, "$1\"")  // replace unescaped single quote with double quote
+        .replace(/\,\s*\}/g, "}")      // get rid of trailing commas in object
+        .replace(/\,\s*\]/g, "]");     // get rid of trailing commas in array
+      user = JSON.parse(userText);
+      console.log("User", user);
     });
   },
   updateMessageTime: function() {
@@ -327,6 +340,6 @@ window.onload = function() {
   handlers.sendMessage();
   handlers.messageInputChange();
   api.smsListing();
-  api.rnrData();
+  api.globalData();
   api.updateMessageTime();
 };
