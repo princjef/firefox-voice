@@ -2,6 +2,7 @@ var classNames = {
   conversation: "contact",
   detailsView: "left-shifted",
   placeholder: "grey",
+  typeaheadContact: "typeahead-element",
   gvConversation: 'gc-message',
   gvConversationRead: 'gc-message-read',
   gvConversationUnread: 'gc-message-unread',
@@ -94,6 +95,35 @@ var handlers = {
       document.getElementById(ids.wrap).classList.toggle("find-contact");
       document.getElementById(ids.newConversationInput).focus();
     });
+  },
+  contactTypeahead: function() {
+    var contactInput = document.getElementById(ids.newConversationInput);
+    var typeaheadContacts = document.getElementsByClassName(classNames.typeaheadContact);
+
+    var typeahead = function() {
+      window.setTimeout(function() {
+        var value = contactInput.value.toLowerCase();
+        var numValue = value.replace(/\.|-|\s/g, "");
+
+        for (var i = 0; i < typeaheadContacts.length; i++) {
+          var contact = typeaheadContacts.item(i);
+          if (contact.dataset.name.toLowerCase().contains(value) ||
+              contact.dataset.phoneNumber.contains(numValue) ||
+              contact.dataset.displayNumber.contains(value)
+          ) {
+            contact.classList.remove('hidden');
+          } else {
+            contact.classList.add('hidden');
+          }
+        }
+      }, 0);
+    };
+
+    contactInput.addEventListener('change', typeahead);
+    contactInput.addEventListener('cut', typeahead);
+    contactInput.addEventListener('paste', typeahead);
+    contactInput.addEventListener('drop', typeahead);
+    contactInput.addEventListener('keydown', typeahead);
   }
 };
 
@@ -270,7 +300,8 @@ var dom = {
       var contactInfo = user.contacts[contactId];
       var contact = document.createElement('li');
       contact.classList.add('typeahead-element');
-      contact.dataset.phone = contactInfo.phoneNumber;
+      contact.dataset.phoneNumber = contactInfo.phoneNumber;
+      contact.dataset.displayNumber = contactInfo.displayNumber;
       contact.dataset.name = contactInfo.name;
 
       var name = document.createElement('span');
@@ -374,6 +405,7 @@ window.onload = function() {
   handlers.sendMessage();
   handlers.messageInputChange();
   handlers.newConversationClick();
+  handlers.contactTypeahead();
   api.smsListing();
   api.globalData();
   api.updateMessageTime();
