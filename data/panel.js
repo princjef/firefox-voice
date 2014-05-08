@@ -30,15 +30,16 @@ var ids = {
   conversationListingHeader: "conversation-listing-header"
 };
 
-var user = {};
-var conversations = {};
-var currentConversation = {};
-var numberToText = "";
-var rnrKey = null;
-var currentMessageUpdateId = 1;
-var pendingMessages = [];
-var findingContact = false;
-var oldContactInputValue = "";
+var globals = {
+  user: {},
+  conversations: {},
+  currentConversation: {},
+  rnrKey: null,
+  currentMessageUpdateId: 1,
+  pendingMessages: [],
+  findingContact: false,
+  oldContactInputValue: ""
+};
 
 var handlers = {
   conversationClick: function() {
@@ -51,7 +52,7 @@ var handlers = {
           this.classList.add('read');
           self.port.emit('markRead', {
             id: this.dataset.id,
-            rnrKey: rnrKey
+            rnrKey: globals.rnrKey
           });
         }
         document.getElementById(ids.wrap).classList.add(classNames.detailsView);
@@ -82,20 +83,20 @@ var handlers = {
   sendMessage: function() {
     document.getElementById(ids.sendMessageButton).addEventListener('click', function() {
       var message = document.getElementById(ids.messageInput).value;
-      pendingMessages[currentMessageUpdateId] = dom.addNewMessage(message, true);
+      globals.pendingMessages[globals.currentMessageUpdateId] = dom.addNewMessage(message, true);
 
       self.port.emit('sendMessage', {
         message: message,
-        conversation: currentConversation,
-        rnrKey: rnrKey,
-        updateId: currentMessageUpdateId
+        conversation: globals.currentConversation,
+        rnrKey: globals.rnrKey,
+        updateId: globals.currentMessageUpdateId
       });
     });
   },
   newConversationClick: function() {
     document.getElementById(ids.newConversationButton).addEventListener('click', function() {
       console.log("Clicked new conversation button");
-      findingContact = !findingContact;
+      globals.findingContact = !globals.findingContact;
       document.getElementById(ids.wrap).classList.toggle("find-contact");
       document.getElementById(ids.newConversationInput).focus();
     });
@@ -107,8 +108,8 @@ var handlers = {
     var typeahead = function() {
       window.setTimeout(function() {
         var value = contactInput.value.toLowerCase();
-        if (value !== oldContactInputValue) {
-          oldContactInputValue = value;
+        if (value !== globals.oldContactInputValue) {
+          globals.oldContactInputValue = value;
           var numValue = value.replace(/\.|-|\s/g, "");
           var firstElement = true;
 
@@ -252,8 +253,8 @@ var dom = {
   populateConversationListing: function() {
     var list = document.getElementById(ids.conversationListing);
     list.innerHTML = "";
-    for (var key in conversations) {
-      var conversation = conversations[key];
+    for (var key in globals.conversations) {
+      var conversation = globals.conversations[key];
       var contact = document.createElement('li');
 
       // Classes
@@ -285,16 +286,16 @@ var dom = {
     }
   },
   populateConversationDetails: function(id) {
-    currentConversation = conversations[id];
+    globals.currentConversation = globals.conversations[id];
 
     var list = document.getElementById(ids.messageList);
     list.innerHTML = "";
 
     // Name
-    document.getElementById(ids.conversationDetailsName).innerHTML = currentConversation.contact.name;
+    document.getElementById(ids.conversationDetailsName).innerHTML = globals.currentConversation.contact.name;
 
     // Messages
-    currentConversation.messages.forEach(function(message) {
+    globals.currentConversation.messages.forEach(function(message) {
       var messageHTML = document.createElement('li');
 
       // Classes
@@ -323,7 +324,7 @@ var dom = {
     });
 
     // Text Number
-    document.getElementById(ids.messageInput).setAttribute("placeholder", "Send to " + currentConversation.contact.displayNumber);
+    document.getElementById(ids.messageInput).setAttribute("placeholder", "Send to " + globals.currentConversation.contact.displayNumber);
 
     // Scroll
     var listWrap = document.getElementById(ids.messageListScroll);
@@ -381,8 +382,8 @@ var dom = {
     var typeahead = document.getElementById(ids.contactTypeahead);
     typeahead.innerHTML = "";
 
-    user.rankedContacts.forEach(function(contactId) {
-      var contactInfo = user.contacts[contactId];
+    globals.user.rankedContacts.forEach(function(contactId) {
+      var contactInfo = globals.user.contacts[contactId];
       var contact = document.createElement('li');
       contact.classList.add('typeahead-element');
       contact.classList.add('visible');
@@ -416,11 +417,11 @@ var api = {
         that.newMessageNotification(newConversations);
       }
 
-      conversations = newConversations;
+      globals.conversations = newConversations;
 
       dom.populateConversationListing();
-      if (currentConversation.id !== undefined && currentConversation.id !== null) {
-        dom.populateConversationDetails(currentConversation.id);
+      if (globals.currentConversation.id !== undefined && globals.currentConversation.id !== null) {
+        dom.populateConversationDetails(globals.currentConversation.id);
       }
       handlers.conversationClick();
     });
@@ -429,8 +430,8 @@ var api = {
     self.port.on('globalData', function(htmlString) {
       var parser = new DOMParser();
       var doc = parser.parseFromString(htmlString, "text/html");
-      rnrKey = doc.getElementsByName("_rnr_se")[0].value;
-      console.log("rnrKey", rnrKey);
+      globals.rnrKey = doc.getElementsByName("_rnr_se")[0].value;
+      console.log("rnrKey", globals.rnrKey);
 
       var scriptElements = doc.getElementsByTagName("script");
       var userText = scriptElements.item(scriptElements.length - 1)
@@ -440,26 +441,26 @@ var api = {
         .replace(/(\/\/)*'/g, "$1\"")  // replace unescaped single quote with double quote
         .replace(/\,\s*\}/g, "}")      // get rid of trailing commas in object
         .replace(/\,\s*\]/g, "]");     // get rid of trailing commas in array
-      user = JSON.parse(userText);
+      globals.user = JSON.parse(userText);
       console.log("Extracted user info");
       dom.populateTypeahead();
     });
   },
   updateMessageTime: function() {
     self.port.on('messageSent', function(data) {
-      pendingMessages[data.updateId](data.success);
+      globals.pendingMessages[data.updateId](data.success);
     });
   },
   newMessageNotification: function(newConversations) {
-    var firstMessageOnly = (conversations === null);
+    var firstMessageOnly = (globals.conversations === null);
     for (var id in newConversations) {
       var conversation = newConversations[id];
       if (!conversation.isRead) {
-        if (conversations === null ||
-            conversations === undefined ||
-            conversations[id] === undefined ||
-            conversations[id].isRead ||
-            conversation.length > conversations[id].length
+        if (globals.conversations === null ||
+            globals.conversations === undefined ||
+            globals.conversations[id] === undefined ||
+            globals.conversations[id].isRead ||
+            conversation.length > globals.conversations[id].length
         ) {
           var sentNotification = false;
           for (var i = conversation.messages.length - 1; i >= 0; i--) {
@@ -490,15 +491,15 @@ var api = {
   selectContact: function(element) {
     var contactId = element.dataset.contactId;
     var key = "";
-    for (var id in conversations) {
-      if (conversations[id].contact.phoneNumber === element.dataset.phoneNumber) {
+    for (var id in globals.conversations) {
+      if (globals.conversations[id].contact.phoneNumber === element.dataset.phoneNumber) {
         key = id;
         break;
       }
     }
 
     if (key === "") {
-      conversations[""] = {
+      globals.conversations[""] = {
         id: "",
         isRead: true,
         timestamp: "",
