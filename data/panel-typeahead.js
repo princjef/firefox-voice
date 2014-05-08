@@ -175,7 +175,13 @@ var typeahead = {
     }
   },
   hide: function() {
-    document.getElementById(ids.wrap).classList.toggle("find-contact");
-    document.getElementById(ids.newConversationInput).value = "";
+    var wrap = document.getElementById(ids.wrap);
+    if (wrap.classList.contains("find-contact")) {
+      wrap.classList.remove("find-contact");
+      document.getElementById(ids.newConversationInput).value = "";
+      return true;
+    } else {
+      return false;
+    }
   }
 };

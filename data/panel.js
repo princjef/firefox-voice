@@ -92,6 +92,19 @@ var handlers = {
         updateId: globals.currentMessageUpdateId
       });
     });
+  },
+  esc: function() {
+    window.addEventListener('keydown', function(event) {
+      if (event.keyCode === 27) {  // Esc key
+        if (typeahead.hide()) {
+          event.stopPropagation();
+          event.preventDefault();
+        } else if (detailsView.hide()) {
+          event.stopPropagation();
+          event.preventDefault();
+        }
+      }
+    });
   }
 };
 
@@ -344,10 +357,22 @@ var api = {
   }
 };
 
+var detailsView = {
+  hide: function() {
+    var wrap = document.getElementById(ids.wrap);
+    if (wrap.classList.contains(classNames.detailsView)) {
+      wrap.classList.remove(classNames.detailsView);
+    } else {
+      return false;
+    }
+  }
+}
+
 window.onload = function() {
   handlers.backButton();
   handlers.sendMessage();
   handlers.messageInputChange();
+  handlers.esc();
   typeahead.openDialog();
   typeahead.inputChange();
   typeahead.keyEvents();
