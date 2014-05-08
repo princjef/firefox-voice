@@ -2,7 +2,7 @@ var classNames = {
   conversation: "contact",
   detailsView: "left-shifted",
   placeholder: "grey",
-  typeaheadContact: "typeahead-element",
+  contactTypeaheadElement: "typeahead-element",
   gvConversation: 'gc-message',
   gvConversationRead: 'gc-message-read',
   gvConversationUnread: 'gc-message-unread',
@@ -31,7 +31,7 @@ var ids = {
 };
 
 var user = {};
-var conversations = null;
+var conversations = {};
 var currentConversation = {};
 var numberToText = "";
 var rnrKey = null;
@@ -102,7 +102,7 @@ var handlers = {
   },
   contactTypeahead: function() {
     var contactInput = document.getElementById(ids.newConversationInput);
-    var typeaheadContacts = document.getElementsByClassName(classNames.typeaheadContact);
+    var typeaheadContacts = document.getElementsByClassName(classNames.contactTypeaheadElement);
 
     var typeahead = function() {
       window.setTimeout(function() {
@@ -155,28 +155,28 @@ var handlers = {
 
       var selectedElement = null;
 
-      if (event.keyCode === 38) {  // Up Arrow
+      if (event.keyCode === 38 || event.keyCode === 40) {  // Up/down Arrow
         var visibleElements = document.querySelectorAll('.typeahead-element.visible');
         var index = getSelectedIndex(visibleElements);
         if (index !== null) {
           visibleElements.item(index).classList.remove('selected');
         }
-        var newIndex = (index === null || index <= 0) ? (visibleElements.length - 1) : (index - 1);
-        visibleElements.item(newIndex).classList.add('selected');
-        selectedElement = visibleElements.item(newIndex);
-        event.stopPropagation();
-        event.preventDefault();
-      } else if (event.keyCode === 40) {  // Down Arrow
-        var visibleElements = document.querySelectorAll('.typeahead-element.visible');
-        var index = getSelectedIndex(visibleElements);
-        if (index !== null) {
-          visibleElements.item(index).classList.remove('selected');
+
+        var newIndex;
+        if (event.keyCode === 38) {  // Up arrow
+          newIndex = ((index === null || index <= 0) ? (visibleElements.length - 1) : (index - 1));
+        } else {  // Down arrow
+          newIndex = ((index === null || index >= visibleElements.length - 1) ? 0 : (index + 1));
         }
-        var newIndex = (index === null || index >= visibleElements.length - 1) ? 0 : (index + 1);
+
         visibleElements.item(newIndex).classList.add('selected');
         selectedElement = visibleElements.item(newIndex);
         event.stopPropagation();
         event.preventDefault();
+
+      } else if (event.keyCode === 13) { // Enter
+        var selectedElement = document.querySelectorAll('.typeahead-element.visible.selected')[0];
+        api.selectContact(selectedElement);
       }
 
       if (selectedElement !== null) {
@@ -191,6 +191,24 @@ var handlers = {
         }
       }
     });
+  },
+  typeaheadSelect: function() {
+    console.log("Called typeaheadSelect");
+    var typeaheadElements = document.getElementsByClassName(classNames.contactTypeaheadElement);
+
+    console.log("Typeahead Elements Length", typeaheadElements.length);
+    for (var i = 0; i < typeaheadElements.length; i++) {
+      typeaheadElements.item(i).addEventListener('mouseenter', function(event) {
+        for (var j = 0; j < typeaheadElements.length; j++) {
+          typeaheadElements.item(j).classList.remove('selected');
+        }
+        this.classList.add('selected');
+      });
+
+      typeaheadElements.item(i).addEventListener('click', function(event) {
+        api.selectContact(this);
+      });
+    }
   }
 };
 
@@ -368,6 +386,7 @@ var dom = {
       var contact = document.createElement('li');
       contact.classList.add('typeahead-element');
       contact.classList.add('visible');
+      contact.dataset.contactId = contactInfo.contactId;
       contact.dataset.phoneNumber = contactInfo.phoneNumber;
       contact.dataset.displayNumber = contactInfo.displayNumber;
       contact.dataset.name = contactInfo.name;
@@ -383,6 +402,8 @@ var dom = {
 
       typeahead.appendChild(contact);
     });
+
+    handlers.typeaheadSelect();
   }
 };
 
@@ -465,6 +486,35 @@ var api = {
       document.getElementById(ids.wrap).classList.add(classNames.detailsView);
       dom.populateConversationDetails(data.id);
     });
+  },
+  selectContact: function(element) {
+    var contactId = element.dataset.contactId;
+    var key = "";
+    for (var id in conversations) {
+      if (conversations[id].contact.phoneNumber === element.dataset.phoneNumber) {
+        key = id;
+        break;
+      }
+    }
+
+    if (key === "") {
+      conversations[""] = {
+        id: "",
+        isRead: true,
+        timestamp: "",
+        relativeTime: "",
+        contact: {
+          name: element.dataset.name,
+          displayNumber: element.dataset.displayNumber,
+          phoneNumber: element.dataset.phoneNumber,
+          imageUrl: ""
+        },
+        messages: []
+      };
+    }
+
+    dom.populateConversationDetails(key);
+    document.getElementById(ids.wrap).classList.add(classNames.detailsView);
   }
 };
 
