@@ -92,14 +92,6 @@ var handlers = {
         updateId: globals.currentMessageUpdateId
       });
     });
-  },
-  newConversationClick: function() {
-    document.getElementById(ids.newConversationButton).addEventListener('click', function() {
-      console.log("Clicked new conversation button");
-      globals.findingContact = !globals.findingContact;
-      document.getElementById(ids.wrap).classList.toggle("find-contact");
-      document.getElementById(ids.newConversationInput).focus();
-    });
   }
 };
 
@@ -356,7 +348,7 @@ window.onload = function() {
   handlers.backButton();
   handlers.sendMessage();
   handlers.messageInputChange();
-  handlers.newConversationClick();
+  typeahead.openDialog();
   typeahead.inputChange();
   typeahead.keyEvents();
   api.smsListing();

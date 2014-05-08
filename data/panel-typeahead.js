@@ -1,4 +1,12 @@
 var typeahead = {
+  openDialog: function() {
+    document.getElementById(ids.newConversationButton).addEventListener('click', function() {
+      console.log("Clicked new conversation button");
+      globals.findingContact = !globals.findingContact;
+      document.getElementById(ids.wrap).classList.toggle("find-contact");
+      document.getElementById(ids.newConversationInput).focus();
+    });
+  },
   setSelection: function(element) {
     var contactId = element.dataset.contactId;
     var key = "";
@@ -25,6 +33,7 @@ var typeahead = {
       };
     }
 
+    this.hide();
     dom.populateConversationDetails(key);
     document.getElementById(ids.wrap).classList.add(classNames.detailsView);
   },
@@ -60,7 +69,7 @@ var typeahead = {
     var contactInput = document.getElementById(ids.newConversationInput);
     var typeaheadContacts = document.getElementsByClassName(classNames.contactTypeaheadElement);
 
-    var startTypeahead = function() {
+    var updateTypeahead = function() {
       window.setTimeout(function() {
         var value = contactInput.value.toLowerCase();
         if (value !== globals.oldContactInputValue) {
@@ -92,11 +101,11 @@ var typeahead = {
       }, 0);
     };
 
-    contactInput.addEventListener('change', startTypeahead);
-    contactInput.addEventListener('cut', startTypeahead);
-    contactInput.addEventListener('paste', startTypeahead);
-    contactInput.addEventListener('drop', startTypeahead);
-    contactInput.addEventListener('keydown', startTypeahead);
+    contactInput.addEventListener('change', updateTypeahead);
+    contactInput.addEventListener('cut', updateTypeahead);
+    contactInput.addEventListener('paste', updateTypeahead);
+    contactInput.addEventListener('drop', updateTypeahead);
+    contactInput.addEventListener('keydown', updateTypeahead);
   },
   keyEvents: function() {
     document.getElementById(ids.newConversationInput).addEventListener('keydown', function(event) {
@@ -164,5 +173,9 @@ var typeahead = {
         typeahead.setSelection(this);
       });
     }
+  },
+  hide: function() {
+    document.getElementById(ids.wrap).classList.toggle("find-contact");
+    document.getElementById(ids.newConversationInput).value = "";
   }
 };
