@@ -55,6 +55,9 @@ Conversation.prototype.addClickHandler = function(rnrKey) {
       });
     }
     document.getElementById(ids.wrap).classList.add(classNames.detailsView);
+    setTimeout(function() {
+      document.getElementById(ids.messageInput).focus();
+    },200);
   });
 };
 
