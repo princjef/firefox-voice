@@ -248,6 +248,12 @@ var api = {
       document.getElementById(ids.wrap).classList.add(classNames.detailsView);
       globals.conversations[data.id].populateDetails();
     });
+  },
+  hide: function() {
+    self.port.on('hide', function() {
+      typeahead.hide();
+      detailsView.hide();
+    });
   }
 };
 
@@ -273,4 +279,5 @@ window.onload = function() {
   api.smsListing();
   api.globalData();
   api.updateMessageTime();
+  api.hide();
 };
