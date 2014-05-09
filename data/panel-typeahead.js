@@ -18,23 +18,23 @@ var typeahead = {
     }
 
     if (key === "") {
-      globals.conversations[""] = {
+      globals.conversations[""] = new Conversation({
         id: "",
         isRead: true,
         timestamp: "",
         relativeTime: "",
-        contact: {
+        contact: new Contact({
           name: element.dataset.name,
           displayNumber: element.dataset.displayNumber,
           phoneNumber: element.dataset.phoneNumber,
           imageUrl: ""
-        },
+        }),
         messages: []
-      };
+      });
     }
 
     this.hide();
-    dom.populateConversationDetails(key);
+    globals.conversations[key].populateDetails();
     document.getElementById(ids.wrap).classList.add(classNames.detailsView);
   },
   populate: function() {
