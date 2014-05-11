@@ -1,0 +1,39 @@
+<svg viewbox="4 7 93 90" version="1.1" xmlns="http://www.w3.org/2000/svg">
+  <style>
+    .bubble-stroke {
+      fill: none;
+      stroke: black;
+      stroke-width: 3;
+      stroke-linejoin: round;
+    }
+
+      .bubble-foreground {
+      fill: #fff;
+    }
+
+    .bubble {
+      fill: #ccc;
+    }
+
+    .phone {
+      fill: #3EA3E6;
+    }
+  </style>
+  <g class="bubble-stroke">
+   <path d="M 18,63 C 17,67 12,72 5,75 C 10,75 25,80 35,70 Z" />
+   <ellipse cx="50" cy="50" rx="38" ry="28" />
+   <path d="M 17,61 C 16,65 12,72 5,75 C 9,73 24,78 34,68 Z" />
+   <ellipse cx="48" cy="47" rx="38" ry="27" />
+  </g>
+  <g class="bubble">
+   <path d="M 18,63 C 17,67 12,72 5,75 C 10,75 25,80 35,70 Z" />
+   <ellipse cx="50" cy="50" rx="38" ry="28" />
+  </g>
+  <g class="bubble-foreground">
+   <path d="M 17,61 C 16,65 12,72 5,75 C 9,73 24,78 34,68 Z" />
+   <ellipse cx="48" cy="47" rx="38" ry="27" />
+  </g>
+  <g class="phone">
+    <path d="M 35,29 C 30,39 29,40 42,53 C 55,66 56,65 66,60 C 70,58 58,49 56,51 C 52,55 52,55 46,49 C 40,43 40,43 44,39 C 46,37 37,25 35,29 Z" />
+  </g>
+</svg>
