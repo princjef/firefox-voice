@@ -33,7 +33,7 @@ var ids = {
 var globals = {
   user: {},
   conversations: {},
-  currentConversation: {},
+  currentConversation: null,
   rnrKey: null,
   currentMessageUpdateId: 1,
   pendingMessages: [],
@@ -74,17 +74,13 @@ var handlers = {
       dom.addNewMessage(message);
       globals.pendingMessages[globals.currentMessageUpdateId] = message;
 
-      if (globals.conversations[globals.currentConversation.id] === undefined) {
-        globals.conversations[globals.currentConversation.id] = [];
-      }
-
       var messageData = {
         isOutgoing: true,
         content: message,
         time: "Sending"
       };
 
-      globals.conversations[globals.currentConversation.id].messages.push(messageData);
+      globals.currentConversation.messages.push(messageData);
 
       self.port.emit('sendMessage', {
         message: message,
@@ -180,9 +176,18 @@ var api = {
 
       globals.conversations = newConversations;
 
+      if (globals.currentConversation !== null) {
+        for (var id in globals.conversations) {
+          if (globals.conversations[id].hasContact(globals.currentConversation.contact)) {
+            globals.conversations[id].absorb(globals.currentConversation);
+            globals.currentConversation = globals.conversations[id];
+          }
+        }
+      }
+
       dom.populateConversationListing();
-      if (globals.currentConversation.id !== undefined && globals.currentConversation.id !== null) {
-        globals.conversations[globals.currentConversation.id].populateDetails();
+      if (globals.currentConversation !== null) {
+        globals.currentConversation.populateDetails();
       }
 
     });

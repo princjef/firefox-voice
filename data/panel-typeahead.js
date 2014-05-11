@@ -18,7 +18,7 @@ var typeahead = {
     }
 
     if (key === "") {
-      globals.conversations[""] = new Conversation({
+      globals.currentConversation = new Conversation({
         id: "",
         isRead: true,
         timestamp: "",
@@ -31,10 +31,12 @@ var typeahead = {
         }),
         messages: []
       });
+    } else {
+      globals.currentConversation = globals.conversations[key];
     }
 
     this.hide();
-    globals.conversations[key].populateDetails();
+    globals.currentConversation.populateDetails();
     document.getElementById(ids.wrap).classList.add(classNames.detailsView);
   },
   populate: function() {

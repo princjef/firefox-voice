@@ -84,3 +84,14 @@ Conversation.prototype.populateDetails = function() {
     listWrap.scrollTop = listWrap.scrollHeight;
   }
 };
+
+Conversation.prototype.hasContact = function(contact) {
+  return this.contact.phoneNumber === contact.phoneNumber;
+};
+
+Conversation.prototype.absorb = function(conversation) {
+  var pendingMessages = conversation.messages.filter(function(message) {
+    return message.isPending;
+  });
+  this.messages = this.messages.concat(pendingMessages);
+};
