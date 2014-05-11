@@ -47,8 +47,8 @@ Conversation.prototype.addClickHandler = function(rnrKey) {
     that.populateDetails();
     globals.currentConversation = that;
     if (!that.isRead) {
-      that.classList.remove('unread');
-      that.classList.add('read');
+      that.element.classList.remove('unread');
+      that.element.classList.add('read');
       self.port.emit('markRead', {
         id: that.id,
         rnrKey: rnrKey
