@@ -51,18 +51,11 @@ var handlers = {
   messageInputChange: function() {
     var messageInput = document.getElementById(ids.messageInput);
 
-    var resize = function() {
-      window.setTimeout(function() {
-        messageInput.style.height = "1px";
-        messageInput.style.height = messageInput.scrollHeight + "px";
-      }, 0);
-    };
-
-    messageInput.addEventListener('change', resize);
-    messageInput.addEventListener('cut', resize);
-    messageInput.addEventListener('paste', resize);
-    messageInput.addEventListener('drop', resize);
-    messageInput.addEventListener('keydown', resize);
+    messageInput.addEventListener('change', dom.resizeMessageInput);
+    messageInput.addEventListener('cut', dom.resizeMessageInput);
+    messageInput.addEventListener('paste', dom.resizeMessageInput);
+    messageInput.addEventListener('drop', dom.resizeMessageInput);
+    messageInput.addEventListener('keydown', dom.resizeMessageInput);
   },
   sendMessage: function() {
     document.getElementById(ids.sendMessageButton).addEventListener('click', function() {
@@ -164,10 +157,18 @@ var dom = {
     list.appendChild(messageElement);
 
     document.getElementById(ids.messageInput).value = "";
+    dom.resizeMessageInput();
 
     // Scroll
     var listWrap = document.getElementById(ids.messageListScroll);
     listWrap.scrollTop = listWrap.scrollHeight;
+  },
+  resizeMessageInput: function() {
+    window.setTimeout(function() {
+      var messageInput = document.getElementById(ids.messageInput);
+      messageInput.style.height = "1px";
+      messageInput.style.height = messageInput.scrollHeight + "px";
+    }, 0);
   }
 };
 
