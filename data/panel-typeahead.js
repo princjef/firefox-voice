@@ -37,7 +37,7 @@ var typeahead = {
 
     this.hide();
     globals.currentConversation.populateDetails();
-    document.getElementById(ids.wrap).classList.add(classNames.detailsView);
+    dom.switchToDetailsView();
   },
   populate: function() {
     var typeaheadElement = document.getElementById(ids.contactTypeahead);

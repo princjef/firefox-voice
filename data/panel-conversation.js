@@ -54,10 +54,7 @@ Conversation.prototype.addClickHandler = function(rnrKey) {
         rnrKey: rnrKey
       });
     }
-    document.getElementById(ids.wrap).classList.add(classNames.detailsView);
-    setTimeout(function() {
-      document.getElementById(ids.messageInput).focus();
-    },200);
+    dom.switchToDetailsView();
   });
 };
 

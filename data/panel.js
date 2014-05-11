@@ -106,6 +106,12 @@ var handlers = {
 };
 
 var dom = {
+  switchToDetailsView: function() {
+    document.getElementById(ids.wrap).classList.add(classNames.detailsView);
+    setTimeout(function() {
+      document.getElementById(ids.messageInput).focus();
+    },200);
+  },
   parseListingHTML: function(htmlString, jsonResponse) {
     var parser = new DOMParser();
     var doc = parser.parseFromString(htmlString, "text/html");
