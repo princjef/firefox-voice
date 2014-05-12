@@ -268,20 +268,28 @@ body {
   background-color: #3EA3E6;
   border: 0.05em solid #3791CC;
   border-radius: 0.3em;
+  box-shadow: 0 0 0 #78C9FF;
   font-size: 0.9em;
 
   transition: all 0.3s ease;
 }
 
-.send-message-button:hover {
+.send-message-button:hover, .send-message-button:focus {
   background-color: #45B5FF;
   border-color: #3EA3E6;
+  box-shadow: 0 0 0.2em #78C9FF;
   transition-duration: 0s;
+  outline: none;
 }
 
 .send-message-button:active {
   background-color: #296D99;
   border-color: #225B80;
+  box-shadow: 0 0 0 #78C9FF;
+}
+
+button.send-message-button::-moz-focus-inner {
+  border: 0;
 }
 
 /* New Conversation */
