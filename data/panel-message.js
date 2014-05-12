@@ -48,7 +48,7 @@ Message.prototype.sent = function(success) {
     if (hour === 0) hour = 12;
     var minutes = d.getMinutes();
     if (minutes.toString(10).length === 1) minutes = "0" + minutes;
-    this.time = "" + hour + ":" + d.getMinutes() + " " + AMPM;
+    this.time = "" + hour + ":" + minutes + " " + AMPM;
     time.innerHTML = this.time;
   } else {
     time.innerHTML = "Failed to send";
