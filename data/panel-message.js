@@ -46,6 +46,8 @@ Message.prototype.sent = function(success) {
     var AMPM = d.getHours() >= 12 ? "PM" : "AM";
     var hour = d.getHours() % 12;
     if (hour === 0) hour = 12;
+    var minutes = d.getMinutes();
+    if (minutes.toString(10).length === 1) minutes = "0" + minutes;
     this.time = "" + hour + ":" + d.getMinutes() + " " + AMPM;
     time.innerHTML = this.time;
   } else {
