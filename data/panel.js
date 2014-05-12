@@ -27,6 +27,8 @@ var ids = {
   newConversationInput: "new-conversation-input",
   contactTypeahead: "contact-typeahead",
   contactTypeaheadWrap: "typeahead-wrap",
+  typeaheadPlaceholder: "typeahead-element-placeholder",
+  typeaheadPlaceholderPhoneNumber: "typeahead-element-placeholder-phone",
   conversationListingHeader: "conversation-listing-header"
 };
 

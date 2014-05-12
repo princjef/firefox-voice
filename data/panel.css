@@ -32,7 +32,7 @@ body {
   font-size: 0.9em;
 }
 
-.grey {
+.grey, .typeahead-element-placeholder {
   color: #888888;
 }
 
@@ -339,7 +339,7 @@ body {
   list-style-type: none;
 }
 
-.typeahead-element {
+.typeahead-element, .typeahead-element-placeholder {
   display: block;
   width: 100%;
   font-size: 0.9em;
@@ -350,7 +350,11 @@ body {
   border-bottom: 0.1em solid #f5f5f5;
 }
 
-.typeahead-element.hidden {
+.typeahead-element-placeholder {
+  border-bottom: none;
+}
+
+.typeahead-element.hidden, .typeahead-element-placeholder.hidden {
   display: none;
 }
 

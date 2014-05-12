@@ -7,11 +7,10 @@ var typeahead = {
       document.getElementById(ids.newConversationInput).focus();
     });
   },
-  setSelection: function(element) {
-    var contactId = element.dataset.contactId;
+  setSelection: function(phoneNumber, displayNumber, name) {
     var key = "";
     for (var id in globals.conversations) {
-      if (globals.conversations[id].contact.phoneNumber === element.dataset.phoneNumber) {
+      if (globals.conversations[id].contact.displayNumber === displayNumber) {
         key = id;
         break;
       }
@@ -24,9 +23,9 @@ var typeahead = {
         timestamp: "",
         relativeTime: "",
         contact: new Contact({
-          name: element.dataset.name,
-          displayNumber: element.dataset.displayNumber,
-          phoneNumber: element.dataset.phoneNumber,
+          name: name,
+          displayNumber: displayNumber,
+          phoneNumber: phoneNumber,
           imageUrl: ""
         }),
         messages: []
@@ -39,9 +38,25 @@ var typeahead = {
     globals.currentConversation.populateDetails();
     dom.switchToDetailsView();
   },
+  updatePlaceholder: function(show, phone) {
+    var typeaheadPlaceholder = document.getElementById(ids.typeaheadPlaceholder);
+
+    if (show) {
+      typeaheadPlaceholder.classList.remove('hidden');
+      document.getElementById(ids.typeaheadPlaceholderPhoneNumber).innerHTML = phone;
+    } else {
+      typeaheadPlaceholder.classList.add('hidden');
+    }
+  },
   populate: function() {
     var typeaheadElement = document.getElementById(ids.contactTypeahead);
-    typeaheadElement.innerHTML = "";
+    var typeaheadContacts = document.getElementsByClassName(classNames.contactTypeaheadElement);
+
+    this.updatePlaceholder(globals.user.rankedContacts.length === 0, "");
+
+    for (var i = typeaheadContacts.length - 1; i >= 0; i++) {
+      typeaheadContacts.remove();
+    }
 
     globals.user.rankedContacts.forEach(function(contactId) {
       var contactInfo = globals.user.contacts[contactId];
@@ -79,6 +94,8 @@ var typeahead = {
           var numValue = value.replace(/\.|-|\s/g, "");
           var firstElement = true;
 
+          typeahead.updatePlaceholder(true, contactInput.value);
+
           for (var i = 0; i < typeaheadContacts.length; i++) {
             var contact = typeaheadContacts.item(i);
             if (contact.dataset.name.toLowerCase().contains(value) ||
@@ -89,6 +106,7 @@ var typeahead = {
               contact.classList.add('visible');
               if (firstElement) {
                 contact.classList.add('selected');
+                typeahead.updatePlaceholder(false);
                 firstElement = false;
               } else {
                 contact.classList.remove('selected');
@@ -142,8 +160,14 @@ var typeahead = {
         event.preventDefault();
 
       } else if (event.keyCode === 13) { // Enter
-        var selectedElement = document.querySelectorAll('.typeahead-element.visible.selected')[0];
-        typeahead.setSelection(selectedElement);
+        var selectedElements = document.querySelectorAll('.typeahead-element.visible.selected');
+        if (selectedElements.length === 0) {
+          var inputValue = document.getElementById(ids.newConversationInput).value;
+          typeahead.setSelection(inputValue, inputValue, null);
+        } else {
+          var selectedElement = selectedElements[0];
+          typeahead.setSelection(selectedElement.dataset.phoneNumber, selectedElement.dataset.displayNumber, selectedElement.dataset.name);
+        }
       }
 
       if (selectedElement !== null) {
@@ -172,7 +196,7 @@ var typeahead = {
       });
 
       typeaheadElements.item(i).addEventListener('click', function(event) {
-        typeahead.setSelection(this);
+        typeahead.setSelection(this.dataset.phoneNumber, this.dataset.displayNumber, this.dataset.name);
       });
     }
   },

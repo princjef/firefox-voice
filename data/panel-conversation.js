@@ -66,7 +66,7 @@ Conversation.prototype.populateDetails = function() {
     list.innerHTML = "";
 
     // Name
-    document.getElementById(ids.conversationDetailsName).innerHTML = this.contact.name;
+    document.getElementById(ids.conversationDetailsName).innerHTML = this.contact.name || this.contact.displayNumber;
 
     // Messages
     this.messages.forEach(function(message) {
