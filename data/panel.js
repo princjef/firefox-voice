@@ -85,6 +85,8 @@ var handlers = {
         rnrKey: globals.rnrKey,
         updateId: globals.currentMessageUpdateId++
       });
+
+      document.getElementById(ids.messageInput).focus();
     });
   },
   esc: function() {
