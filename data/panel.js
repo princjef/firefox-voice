@@ -18,6 +18,8 @@ var ids = {
   wrap: "wrap",
   backButton: "button-back",
   messageInput: "message-input",
+  messageInputLength: "message-input-length",
+  messageInputCapacity: "message-input-capacity",
   conversationListing: "list",
   conversationDetailsName: "conversation-name",
   messageList: "message-list",
@@ -53,11 +55,11 @@ var handlers = {
   messageInputChange: function() {
     var messageInput = document.getElementById(ids.messageInput);
 
-    messageInput.addEventListener('change', dom.resizeMessageInput);
-    messageInput.addEventListener('cut', dom.resizeMessageInput);
-    messageInput.addEventListener('paste', dom.resizeMessageInput);
-    messageInput.addEventListener('drop', dom.resizeMessageInput);
-    messageInput.addEventListener('keydown', dom.resizeMessageInput);
+    messageInput.addEventListener('change', dom.updateMessageInput);
+    messageInput.addEventListener('cut', dom.updateMessageInput);
+    messageInput.addEventListener('paste', dom.updateMessageInput);
+    messageInput.addEventListener('drop', dom.updateMessageInput);
+    messageInput.addEventListener('keydown', dom.updateMessageInput);
   },
   sendMessage: function() {
     document.getElementById(ids.sendMessageButton).addEventListener('click', function() {
@@ -159,15 +161,20 @@ var dom = {
     list.appendChild(messageElement);
 
     document.getElementById(ids.messageInput).value = "";
-    dom.resizeMessageInput();
+    dom.updateMessageInput();
 
     // Scroll
     var listWrap = document.getElementById(ids.messageListScroll);
     listWrap.scrollTop = listWrap.scrollHeight;
   },
-  resizeMessageInput: function() {
+  updateMessageInput: function() {
     window.setTimeout(function() {
       var messageInput = document.getElementById(ids.messageInput);
+      var messageInputLength = document.getElementById(ids.messageInputLength);
+      var messageInputCapacity = document.getElementById(ids.messageInputCapacity);
+      var length = messageInput.value.length;
+      messageInputLength.innerHTML = length;
+      messageInputCapacity.innerHTML = length + (160 - (length % 160));
       messageInput.style.height = "1px";
       messageInput.style.height = messageInput.scrollHeight + "px";
     }, 0);

@@ -52,7 +52,12 @@
           </ul>
         </div>
         <div class="conversation-footer panel-flex-fixed">
-          <textarea id="message-input" class="message-input" name="message" placeholder="Send to (123) 456-7890"></textarea>
+          <div class="message-input-wrap">
+            <textarea id="message-input" class="message-input" name="message" placeholder="Send to (123) 456-7890"></textarea>
+            <div class="message-input-length-indicator tiny grey">
+              <span id="message-input-length">0</span>/<span id="message-input-capacity">160</span>
+            </div>
+          </div>
           <button class="button button-flat-primary button-rounded send-message-button" id="send-message">Send</button>
         </div>
       </section>
