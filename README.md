@@ -4,9 +4,9 @@ This is a [Google Voice](http://google.com/voice) add-on for the Firefox web bro
 
 In order for the add-on to function properly, you must be signed into a Google account that has Google Voice set up. If you do not have this set-up, you will be prompted to log in when you try to open the add-on.
 
-**GitHub Repository: ** [https://github.com/princjef/firefox-voice/](https://github.com/princjef/firefox-voice/)
+**GitHub Repository:** [https://github.com/princjef/firefox-voice/](https://github.com/princjef/firefox-voice/)
 
-**Issues: ** [https://github.com/princjef/firefox-voice/issues](https://github.com/princjef/firefox-voice/issues)
+**Issues:** [https://github.com/princjef/firefox-voice/issues](https://github.com/princjef/firefox-voice/issues)
 
 ## Features
 
