@@ -54,6 +54,10 @@ body {
   list-style-type: none;
 }
 
+.block-list-element {
+  display: block;
+}
+
 .wrap {
   height: 100%;
   width: 200%;
@@ -166,6 +170,18 @@ body {
   margin: 0;
   color: black;
   font-size: 1em;
+}
+
+.load-more-conversations {
+  padding: 1em;
+  text-align: center;
+  background-color: #fbfbfb;
+  transition: background-color 0.3s ease;
+  cursor: pointer;
+}
+
+.load-more-conversations:hover {
+  background-color: #f5f5f5;
 }
 
 /* Header Button */

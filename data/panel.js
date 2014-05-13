@@ -31,7 +31,8 @@ var ids = {
   contactTypeaheadWrap: "typeahead-wrap",
   typeaheadPlaceholder: "typeahead-element-placeholder",
   typeaheadPlaceholderPhoneNumber: "typeahead-element-placeholder-phone",
-  conversationListingHeader: "conversation-listing-header"
+  conversationListingHeader: "conversation-listing-header",
+  loadMoreConversations: "load-more-conversations"
 };
 
 var globals = {
@@ -45,6 +46,8 @@ var globals = {
   findingContact: false,
   oldContactInputValue: ""
 };
+
+var views = {};
 
 var handlers = {
   backButton: function() {
@@ -87,6 +90,11 @@ var handlers = {
       });
 
       document.getElementById(ids.messageInput).focus();
+    });
+  },
+  loadMoreConversations: function() {
+    document.getElementById(ids.loadMoreConversations).addEventListener('click', function() {
+      self.port.emit('smsListing')
     });
   },
   esc: function() {
@@ -149,7 +157,11 @@ var dom = {
   },
   populateConversationListing: function() {
     var list = document.getElementById(ids.conversationListing);
-    list.innerHTML = "";
+    var conversations = list.getElementsByClassName(classNames.conversation);
+    for (var i = conversations.length - 1; i >= 0; i--) {
+      conversations[i].remove();
+    }
+
     for (var key in globals.conversations) {
       var conversation = globals.conversations[key];
       var element = conversation.newElement(globals.rnrKey);
@@ -186,28 +198,25 @@ var dom = {
 var api = {
   smsListing: function() {
     var that = this;
-    self.port.on('recentSMS', function(data) {
-      var newConversations = dom.parseListingHTML(data.response.html, data.response.json);
+    self.port.on('receiveSMS', function(data) {
+      var conversations = dom.parseListingHTML(data.response.html, data.response.json);
       if (data.notify) {
-        that.newMessageNotification(newConversations);
+        that.newMessageNotification(conversations);
       }
 
-      globals.conversations = newConversations;
-
       if (globals.currentConversation !== null) {
-        for (var id in globals.conversations) {
-          if (globals.conversations[id].hasContact(globals.currentConversation.contact)) {
-            globals.conversations[id].absorb(globals.currentConversation);
-            globals.currentConversation = globals.conversations[id];
+        for (var id in views.conversationView.conversations) {
+          if (views.conversationView.conversations[id].hasContact(globals.currentConversation.contact)) {
+            views.conversationView.conversations[id].absorb(globals.currentConversation);
+            globals.currentConversation = views.conversationView.conversations[id];
           }
         }
       }
 
-      dom.populateConversationListing();
+      views.conversationView.populateConversationPage(data.page, conversations);
       if (globals.currentConversation !== null) {
         globals.currentConversation.populateDetails();
       }
-
     });
   },
   globalData: function() {
@@ -282,7 +291,9 @@ var api = {
 
 var detailsView = {
   hide: function() {
+    console.log("called details view hide");
     var wrap = document.getElementById(ids.wrap);
+    views.conversationView.empty();
     if (wrap.classList.contains(classNames.detailsView)) {
       wrap.classList.remove(classNames.detailsView);
     } else {
@@ -292,6 +303,8 @@ var detailsView = {
 }
 
 window.onload = function() {
+  views.conversationView = new ConversationsView();
+
   handlers.backButton();
   handlers.sendMessage();
   handlers.messageInputChange();
