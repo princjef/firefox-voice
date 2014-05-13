@@ -9,7 +9,7 @@
   "icon": "data/icon-48.png",
   "icon64": "data/icon-64.png",
   "preferences": [{
-    "name": "notificationEnabled",
+    "name": "notificationsEnabled",
     "title": "Enable Notifications",
     "description": "Whether or not you would like to receive HTML5 notifications for new unread text messages",
     "type": "bool",
