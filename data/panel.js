@@ -201,9 +201,6 @@ var api = {
     var that = this;
     self.port.on('receiveSMS', function(data) {
       var conversations = dom.parseListingHTML(data.response.html, data.response.json);
-      if (data.notify) {
-        that.newMessageNotification(conversations);
-      }
 
       if (globals.currentConversation !== null) {
         for (var id in views.conversationView.conversations) {
@@ -214,7 +211,7 @@ var api = {
         }
       }
 
-      views.conversationView.populateConversationPage(data.page, conversations);
+      views.conversationView.populateConversationPage(data.page, conversations, data.replace, data.notify);
       if (globals.currentConversation !== null) {
         globals.currentConversation.populateDetails();
       }
@@ -245,37 +242,6 @@ var api = {
       globals.pendingMessages[data.updateId].sent(data.success);
     });
   },
-  newMessageNotification: function(newConversations) {
-    var firstMessageOnly = (globals.conversations === null);
-    for (var id in newConversations) {
-      var conversation = newConversations[id];
-      if (!conversation.isRead) {
-        if (globals.conversations === null ||
-            globals.conversations === undefined ||
-            globals.conversations[id] === undefined ||
-            globals.conversations[id].isRead ||
-            conversation.length > globals.conversations[id].length
-        ) {
-          var sentNotification = false;
-          for (var i = conversation.messages.length - 1; i >= 0; i--) {
-            if (!conversation.messages[i].isOutgoing) {
-              self.port.emit('messageNotification', {
-                id: id,
-                name: conversation.contact.name,
-                displayNumber: conversation.contact.displayNumber,
-                content: conversation.messages[i].content
-              });
-              sentNotification = true;
-              break;
-            }
-          }
-          if (sentNotification && firstMessageOnly) {
-            break;
-          }
-        }
-      }
-    }
-  },
   notificationClick: function() {
     self.port.on('notificationClick', function(data) {
       document.getElementById(ids.wrap).classList.add(classNames.detailsView);
@@ -295,6 +261,7 @@ var detailsView = {
     console.log("called details view hide");
     var wrap = document.getElementById(ids.wrap);
     views.conversationView.empty();
+    views.conversationView.resetPageLength();
     if (wrap.classList.contains(classNames.detailsView)) {
       wrap.classList.remove(classNames.detailsView);
     } else {
