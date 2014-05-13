@@ -1,9 +1,22 @@
 {
   "name": "firefox-voice",
-  "title": "firefox-voice",
+  "title": "Firefox Voice",
   "id": "jid1-H8UjGRAUKJvARQ",
   "description": "a basic add-on",
-  "author": "",
+  "author": "Jeff Principe",
   "license": "MPL 2.0",
-  "version": "0.1"
+  "version": "0.1",
+  "preferences": [{
+    "name": "notificationEnabled",
+    "title": "Enable Notifications",
+    "description": "Whether or not you would like to receive HTML5 notifications for new unread text messages",
+    "type": "bool",
+    "value": true
+  }, {
+    "name": "updateFrequency",
+    "title": "Update Frequency",
+    "description": "The frequency, in seconds, with which you would like the add-on to check for new messages. Smaller values mean that messages come in faster, but may also cause Google Voice to blacklist your IP address.",
+    "type": "integer",
+    "value": 60
+  }]
 }
