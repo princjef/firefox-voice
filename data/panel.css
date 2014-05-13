@@ -28,6 +28,10 @@ body {
   height: 0;
 }
 
+.no-display {
+  display: none;
+}
+
 .small {
   font-size: 0.9em;
 }
