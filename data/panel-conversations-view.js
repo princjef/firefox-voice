@@ -10,6 +10,7 @@ var ConversationsView = function() {
   var that = this;
   this.loadMore.addEventListener('click', function() {
     that.loadConversations(that.requestedPageCount + 1);
+    this.classList.add('loading');
   });
 
   self.port.on('clearConversations', function() {
@@ -37,6 +38,9 @@ ConversationsView.prototype.populateConversationPage = function(page, conversati
     }
     this.displayedPageCount = page;
     this.tempPageData[page] = undefined;
+    if (page === this.requestedPageCount) {
+      this.loadMore.classList.remove('loading');
+    }
     this.populateConversationPage(page + 1, this.tempPageData[page + 1]);
   }
 };
