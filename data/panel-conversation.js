@@ -25,7 +25,7 @@ Conversation.prototype.newElement = function(rnrKey) {
   // Name
   var name = document.createElement('div');
   name.classList.add('contact-name');
-  name.innerHTML = this.contact.name;
+  name.innerHTML = this.contact.name || this.contact.displayNumber;
   element.appendChild(name);
 
   // Phone Number

@@ -127,13 +127,14 @@ var dom = {
     var conversations = doc.getElementsByClassName(classNames.gvConversation);
     for (var i = 0; i < conversations.length; i++) {
       var id = conversations[i].id;
+      var nameElement = conversations[i].getElementsByClassName(classNames.gvConversationContactName)[0];
       var conversation = new Conversation({
         id: id,
         isRead: conversations[i].classList.contains(classNames.gvConversationRead),
         timestamp: jsonResponse[id].displayStartDateTime,
         relativeTime: jsonResponse[id].relativeStartTime,
         contact: new Contact({
-          name: conversations[i].getElementsByClassName(classNames.gvConversationContactName)[0].innerHTML,
+          name: (nameElement !== undefined ? nameElement.innerHTML : undefined),
           displayNumber: jsonResponse[id].displayNumber,
           phoneNumber: jsonResponse[id].phoneNumber,
           imageUrl: conversations[i].getElementsByClassName(classNames.gvConversationPicture)[0].innerHTML

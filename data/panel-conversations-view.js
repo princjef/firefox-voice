@@ -37,7 +37,6 @@ ConversationsView.prototype.populateConversationPage = function(page, conversati
       console.log("added conversation");
     }
     this.displayedPageCount = page;
-    if (this.displayedPageCount >= 5) this.loadMore.classList.add('no-display');
     this.tempPageData[page] = undefined;
     if (page === this.requestedPageCount) {
       this.loadMore.classList.remove('loading');
@@ -56,5 +55,4 @@ ConversationsView.prototype.empty = function() {
   }
   this.requestedPageCount = 1;
   this.displayedPageCount = 0;
-  this.loadMore.classList.remove('no-display');
 };
