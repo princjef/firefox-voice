@@ -32,7 +32,8 @@ var ids = {
   typeaheadPlaceholder: "typeahead-element-placeholder",
   typeaheadPlaceholderPhoneNumber: "typeahead-element-placeholder-phone",
   conversationListingHeader: "conversation-listing-header",
-  loadMoreConversations: "load-more-conversations"
+  loadMoreConversations: "load-more-conversations",
+  unreadCount: "unread-count"
 };
 
 var globals = {
@@ -253,6 +254,11 @@ var api = {
       typeahead.hide();
       detailsView.hide();
     });
+  },
+  updateUnreadCount: function() {
+    self.port.on('updateUnreadCount', function(count) {
+      document.getElementById(ids.unreadCount).innerHTML = count;
+    });
   }
 };
 
@@ -284,4 +290,5 @@ window.onload = function() {
   api.globalData();
   api.updateMessageTime();
   api.hide();
+  api.updateUnreadCount();
 };
