@@ -223,7 +223,7 @@ var api = {
       var doc = parser.parseFromString(htmlString, "text/html");
       globals.rnrKey = doc.getElementsByName("_rnr_se")[0].value;
       self.port.emit('setRnrKey', globals.rnrKey);
-      console.log("rnrKey", globals.rnrKey);
+      // console.log("rnrKey", globals.rnrKey);
 
       var scriptElements = doc.getElementsByTagName("script");
       var userText = scriptElements.item(scriptElements.length - 1)
@@ -234,7 +234,6 @@ var api = {
         .replace(/\,\s*\}/g, "}")      // get rid of trailing commas in object
         .replace(/\,\s*\]/g, "]");     // get rid of trailing commas in array
       globals.user = JSON.parse(userText);
-      console.log("Extracted user info");
       typeahead.populate();
     });
   },
@@ -264,7 +263,6 @@ var api = {
 
 var detailsView = {
   hide: function() {
-    console.log("called details view hide");
     var wrap = document.getElementById(ids.wrap);
     views.conversationView.empty();
     views.conversationView.resetPageLength();

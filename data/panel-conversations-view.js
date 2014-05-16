@@ -20,7 +20,6 @@ var ConversationsView = function() {
 };
 
 ConversationsView.prototype.loadConversations = function(maxPage) {
-  console.log("REQUESTING THROUGH PAGE", maxPage);
   self.port.emit('updatePageCount', maxPage);
   for (var page = this.requestedPageCount + 1; page <= maxPage; page++) {
     self.port.emit('requestSMS', page);
@@ -30,8 +29,6 @@ ConversationsView.prototype.loadConversations = function(maxPage) {
 
 ConversationsView.prototype.populateConversationPage = function(page, conversations, replace, notify) {
   if (conversations !== null && conversations !== undefined) {
-    console.log("populating conversations page", page);
-    console.log("REQUESTED PAGE COUNT", this.requestedPageCount);
 
     // Populate temp conversations
     for (var key in conversations) {
@@ -55,7 +52,6 @@ ConversationsView.prototype.populateConversationPage = function(page, conversati
         this.conversations[key] = this.tempConversations[key];
         var element = this.conversations[key].newElement(globals.rnrKey);
         this.list.appendChild(element);
-        console.log("added conversation");
       }
 
       this.tempConversations = {};
@@ -99,13 +95,11 @@ ConversationsView.prototype.newMessageNotification = function() {
 ConversationsView.prototype.emptyList = function() {
   var conversations = this.list.getElementsByClassName(classNames.conversation);
   for (var i = conversations.length - 1; i >= 0; i--) {
-    console.log("removing conversation");
     conversations[i].remove();
   }
 };
 
 ConversationsView.prototype.empty = function() {
-  console.log("called empty");
   this.displayedPageCount = 0;
 };
 

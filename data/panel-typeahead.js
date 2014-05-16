@@ -1,7 +1,6 @@
 var typeahead = {
   openDialog: function() {
     document.getElementById(ids.newConversationButton).addEventListener('click', function() {
-      console.log("Clicked new conversation button");
       globals.findingContact = !globals.findingContact;
       document.getElementById(ids.wrap).classList.toggle("find-contact");
       document.getElementById(ids.newConversationInput).focus();
