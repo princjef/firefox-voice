@@ -8,7 +8,7 @@ var Conversation = function(data) {
   this.element = null;
 };
 
-Conversation.prototype.newElement = function(rnrKey) {
+Conversation.prototype.newElement = function() {
   var element = document.createElement('li');
 
   // Classes
@@ -36,12 +36,12 @@ Conversation.prototype.newElement = function(rnrKey) {
   element.appendChild(phoneNumber);
 
   this.element = element;
-  this.addClickHandler(rnrKey);
+  this.addClickHandler();
 
   return element;
 };
 
-Conversation.prototype.addClickHandler = function(rnrKey) {
+Conversation.prototype.addClickHandler = function() {
   var that = this;
   this.element.addEventListener('click', function(event) {
     that.populateDetails();
@@ -50,8 +50,7 @@ Conversation.prototype.addClickHandler = function(rnrKey) {
       that.element.classList.remove('unread');
       that.element.classList.add('read');
       self.port.emit('markRead', {
-        id: that.id,
-        rnrKey: rnrKey
+        id: that.id
       });
     }
     dom.switchToDetailsView();

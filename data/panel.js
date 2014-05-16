@@ -86,7 +86,6 @@ var handlers = {
       self.port.emit('sendMessage', {
         message: message,
         conversation: globals.currentConversation,
-        rnrKey: globals.rnrKey,
         updateId: globals.currentMessageUpdateId++
       });
 
@@ -166,7 +165,7 @@ var dom = {
 
     for (var key in globals.conversations) {
       var conversation = globals.conversations[key];
-      var element = conversation.newElement(globals.rnrKey);
+      var element = conversation.newElement();
       list.appendChild(element);
     }
   },
@@ -223,6 +222,7 @@ var api = {
       var parser = new DOMParser();
       var doc = parser.parseFromString(htmlString, "text/html");
       globals.rnrKey = doc.getElementsByName("_rnr_se")[0].value;
+      self.port.emit('setRnrKey', globals.rnrKey);
       console.log("rnrKey", globals.rnrKey);
 
       var scriptElements = doc.getElementsByTagName("script");
